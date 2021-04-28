@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./Crypto.css";
 //import { useDispatch, useSelector } from "react-redux";
 //import { socketConnect } from "../Redux/WebSocket-Crypto/ActionTypes";
 import Pusher from "pusher-js";
@@ -36,7 +37,7 @@ const Crypto = () => {
         setTradesData((prevTradeData) => {
           const date = new Date();
           data.trades[0].date = date.toString();
-          if (prevTradeData.length == 0) {
+          if (prevTradeData !== undefined && prevTradeData.length == 0) {
             return [...prevTradeData, ...data.trades];
           }
           if (
@@ -78,62 +79,85 @@ const Crypto = () => {
   return (
     <div>
       <h1>Orders Table</h1>
-      <table>
-        <tr>
-          <th>Volume</th>
-          <th>Buy Price</th>
-        </tr>
+      <div className="row">
+        <div className="column">
+          <table>
+            <tr>
+              <th>VOLUME</th>
+              <th>PRICE</th>
+            </tr>
 
-        {updateMarketUSDTINRGlobal.bids !== undefined &&
-          updateMarketUSDTINRGlobal.bids.map((item) => {
-            acc = (parseFloat(acc) + parseFloat(item[1])).toFixed(2);
-            return (
-              <tr>
-                <td>{acc}</td>
-                <td>{item[0]}</td>
-              </tr>
-            );
-          })}
-      </table>
-      <table>
-        <tr>
-          <th>Sell Price</th>
-          <th>Volume</th>
-        </tr>
+            {updateMarketUSDTINRGlobal.bids !== undefined &&
+              updateMarketUSDTINRGlobal.bids.map((item, index) => {
+                console.log("index", index);
+                acc = (parseFloat(acc) + parseFloat(item[1])).toFixed(2);
+                if (index < 10) {
+                  return (
+                    <tr>
+                      <td className="colorGreen">{acc}</td>
+                      <td>{item[0]}</td>
+                    </tr>
+                  );
+                } else return <React.Fragment></React.Fragment>;
+              })}
+          </table>
+        </div>
+        <div className="column">
+          <table>
+            <tr>
+              <th>SELL PRICE</th>
+              <th>VOLUME</th>
+            </tr>
 
-        {updateMarketUSDTINRGlobal.asks !== undefined &&
-          updateMarketUSDTINRGlobal.asks.map((item) => {
-            acc2 = (parseFloat(acc2) + parseFloat(item[1])).toFixed(2);
-            return (
-              <tr>
-                <td>{item[0]}</td>
-                <td>{acc2}</td>
-              </tr>
-            );
-          })}
-      </table>
+            {updateMarketUSDTINRGlobal.asks !== undefined &&
+              updateMarketUSDTINRGlobal.asks.map((item, index) => {
+                acc2 = (parseFloat(acc2) + parseFloat(item[1])).toFixed(2);
+                if (index < 10) {
+                  return (
+                    <tr>
+                      <td className="colorRed">{item[0]}</td>
+                      <td>{acc2}</td>
+                    </tr>
+                  );
+                } else {
+                  return <React.Fragment></React.Fragment>;
+                }
+              })}
+          </table>
+        </div>
+      </div>
       <h1>Trade History</h1>
-      <table>
-        <tr>
-          <th>Price</th>
-          <th>Volume</th>
-          <th>Time</th>
-        </tr>
+      <div class="row">
+        <div class="column">
+          <table>
+            <tr>
+              <th>Price</th>
+              <th>Volume</th>
+              <th>Time</th>
+            </tr>
 
-        {tradesData.length > 0 &&
-          tradesData
-            .slice()
-            .reverse()
-            .map((trade, index) => {
-              return (
-                <tr key={index}>
-                  <td>{trade.price}</td>
-                  <td>{trade.amount}</td>
-                  <td>{trade.date.substring(16, 25)}</td>
-                </tr>
-              );
-            })}
-      </table>
+            {tradesData.length > 0 &&
+              tradesData
+                .slice()
+                .reverse()
+                .map((trade, index) => {
+                  return (
+                    <tr key={index}>
+                      <td
+                        className={
+                          trade.type == "sell" ? "colorRed" : "colorGreen"
+                        }
+                      >
+                        {trade.price}
+                      </td>
+                      <td>{trade.amount}</td>
+                      <td>{trade.date.substring(16, 25)}</td>
+                    </tr>
+                  );
+                })}
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
